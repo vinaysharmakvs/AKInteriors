@@ -59,12 +59,23 @@
 .planner-actions { display: flex; justify-content: space-between; gap: 14px; margin-top: 28px; }
 .button.secondary { color: var(--ink); background: #fff; border-color: #cfc9bf; }
 .summary-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 15px; }
+.summary-grid.single { grid-template-columns: minmax(0,700px); }
 .summary-card { padding: 16px; border: 1px solid #ddd8cf; border-radius: 8px; background: #fff; }
 .summary-card img { width: 100%; height: 145px; object-fit: cover; border-radius: 5px; }
 .summary-card h3 { margin: 12px 0 8px; font: 600 21px "Cormorant Garamond",Georgia,serif; }
+.summary-card-head { display:flex; align-items:center; justify-content:space-between; gap:20px; }
+.summary-card-head a { color:var(--green); font-size:13px; font-weight:600; text-underline-offset:4px; }
 .summary-card dl { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin: 0; font-size: 12px; }
 .summary-card dt { color: #777; }
 .summary-card dd { margin: 0; }
+.empty-plan { max-width:700px; padding:28px; border:1px solid #ddd8cf; border-radius:8px; background:#fff; }
+.empty-plan h3 { margin:0 0 7px; }
+.empty-plan p { margin:0 0 18px; color:var(--muted); }
+.carried-plan { margin:22px 0; padding:18px; border-radius:8px; background:#e7f0e8; color:var(--green); }
+.carried-plan>p { margin:5px 0 14px; color:#52645d; font-size:13px; line-height:1.5; }
+.carried-plan dl { display:grid; grid-template-columns:120px 1fr; gap:5px 12px; margin:0; font-size:12px; }
+.carried-plan dt { color:#6a776f; }
+.carried-plan dd { margin:0; color:var(--ink); }
 .notice { margin-top: 18px; padding: 18px; border-radius: 8px; color: #17403a; background: #e4efe6; font-size: 14px; line-height: 1.5; }
 .notice.blue { background: #e8f2f8; color: #17406a; }
 .split-notes { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
