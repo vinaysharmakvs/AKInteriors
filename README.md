@@ -1,25 +1,18 @@
-# AK Interiors homepage
+# AK Interiors website
 
-Responsive HTML/CSS implementation of the approved AK Interiors homepage design. The supplied reference image is not rendered by the page; each section, card, button and form control is native HTML.
-
-Open `index.html` directly, or run a local server from this folder:
+## Run locally
 
 ```sh
-python3 -m http.server 4173
+npm install
+cp .env.example .env
+npm run db:init
+npm run dev
 ```
 
-Then visit `http://localhost:4173`.
+Open `http://localhost:4173`. The enquiry form requires a mobile number, keeps email and location optional, and saves submissions to Neon PostgreSQL. Customers receive a request ID and can check its stage on `track-request.html`.
 
-The room photography was generated specifically for this project and is stored in `assets/`.
+The team dashboard at `enquiry-dashboard.html` uses the private `ADMIN_KEY` from the deployment environment to load enquiries and update their stages.
 
-## Included screens
+## Deploy
 
-- Homepage and services overview
-- Curtains, wardrobes, kitchens, full-home, other services, and materials pages
-- Curtains, wardrobe, and full-home planners
-- Plan summary, service commitment, and project journey
-- Projects, project story, advice, guide, about, and FAQs
-- Start-project form, confirmation, contact, privacy, and terms
-- Internal enquiry dashboard and enquiry detail
-
-All secondary screens use `pages.css` and `site-pages.js`. Mobile home and planner views are responsive versions of the same HTML files.
+Import the GitHub repository into Vercel and add `DATABASE_URL` and `ADMIN_KEY` as environment variables. Do not upload `.env` or `node_modules`.
