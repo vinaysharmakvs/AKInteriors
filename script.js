@@ -1,5 +1,22 @@
 const menuButton = document.querySelector('.menu-toggle');
 const navigation = document.querySelector('.main-nav');
+const brandPartners = document.querySelector('.brand-partners');
+
+if (brandPartners) {
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reducedMotion || !('IntersectionObserver' in window)) {
+    brandPartners.classList.add('logos-visible');
+  } else {
+    brandPartners.classList.add('logo-motion-ready');
+    const logoObserver = new IntersectionObserver((entries, observer) => {
+      if (!entries[0].isIntersecting) return;
+      brandPartners.classList.add('logos-visible');
+      observer.disconnect();
+      window.setTimeout(() => brandPartners.classList.remove('logo-motion-ready'), 1100);
+    }, { threshold: 0.2 });
+    logoObserver.observe(brandPartners);
+  }
+}
 
 menuButton.addEventListener('click', () => {
   const open = navigation.classList.toggle('open');
