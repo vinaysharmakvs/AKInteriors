@@ -248,6 +248,12 @@
 .tracking-help { max-width:1050px; margin:16px auto 0; display:flex; justify-content:center; gap:8px; color:var(--muted); font-size:13px; }
 .tracking-help a { color:var(--green); font-weight:700; }
 .tracking-error { color:#9c2e24!important; font-weight:600; }
+.tracking-error-card { display:grid; grid-template-columns:46px 1fr; gap:18px; align-items:start; }
+.tracking-error-icon { width:46px; height:46px; display:grid; place-items:center; border-radius:50%; color:#fff; background:#b33a2f; font-size:24px; font-weight:700; }
+.tracking-error-card h2 { margin:0 0 8px; color:#8e2d25; font:600 30px "Cormorant Garamond",Georgia,serif; }
+.tracking-error-card p { margin:0 0 9px; color:var(--muted); font-size:14px; line-height:1.55; }
+.tracking-error-actions { display:flex; flex-wrap:wrap; gap:10px; margin-top:16px; }
+.tracking-error-actions .whatsapp-button { border-color:#25d366; background:#25d366; color:#092f1e; }
 .admin-access { display:flex; align-items:center; justify-content:space-between; gap:24px; padding:22px; border:1px solid #dbe1dc; border-radius:10px; background:#fff; }
 .admin-access h2 { margin:0 0 5px; }
 .admin-access p { margin:0; color:var(--muted); font-size:13px; }
@@ -305,6 +311,9 @@
   .location-share .button,.tracking-form .button { width:100%; }
   .status-progress { grid-template-columns:repeat(2,1fr); }
   .tracking-help,.admin-access form { align-items:stretch; flex-direction:column; }
+  .tracking-error-card { grid-template-columns:1fr; }
+  .tracking-error-actions { flex-direction:column; }
+  .tracking-error-actions .button { width:100%; }
   .filters { grid-template-columns: 1fr; }
   .project-card img { height: 210px; }
 }
