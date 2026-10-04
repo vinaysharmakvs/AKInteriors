@@ -1,0 +1,17 @@
+{
+  "name": "ak-interiors",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --env-file=.env server.mjs",
+    "db:init": "node --env-file=.env scripts/init-db.mjs",
+    "check": "node --check site-pages.js && node --check api/enquiries.js && node --check server.mjs"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^1.0.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
