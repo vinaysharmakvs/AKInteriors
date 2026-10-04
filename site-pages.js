@@ -9,7 +9,7 @@ const pageNames = {
   'article-curtains': 'Curtains or Blinds Guide', 'article-privacy': 'Privacy and Natural Light Guide', 'article-small-wardrobes': 'Small Bedroom Wardrobe Guide',
   'article-hinged-sliding': 'Hinged or Sliding Wardrobe Guide', 'article-quotation': 'Interior Quotation Guide', 'article-advance': 'Installer Advance Guide',
   about: 'About AK Interiors', faqs: 'Frequently Asked Questions', 'start-project': 'Start Your Project', received: 'Enquiry Received',
-  contact: 'Contact & Service Areas', privacy: 'Privacy Policy', terms: 'Terms & Consultation Policy', dashboard: 'Enquiry Dashboard', detail: 'Enquiry Detail'
+  contact: 'Contact & Service Areas', privacy: 'Privacy Policy', terms: 'Terms & Consultation Policy', dashboard: 'Enquiry Dashboard', detail: 'Enquiry Detail', track: 'Track Your Request'
 };
 
 const header = () => `
@@ -25,7 +25,7 @@ const header = () => `
 const footer = () => `
   <footer class="site-footer">
     <a class="brand footer-brand" href="index.html"><span class="brand-mark">AK<span>✦</span></span><span class="brand-copy"><strong>AK INTERIORS</strong><small>Designing Dream Spaces</small></span></a>
-    <nav aria-label="Footer navigation"><a href="contact.html">Contact</a><span>|</span><a href="faqs.html">FAQs</a><span>|</span><a href="privacy.html">Privacy</a></nav>
+    <nav aria-label="Footer navigation"><a href="contact.html">Contact</a><span>|</span><a href="track-request.html">Track Request</a><span>|</span><a href="faqs.html">FAQs</a><span>|</span><a href="privacy.html">Privacy</a></nav>
     <p>Website Strategy, Design &amp; Development by <strong>Tivoro</strong></p>
   </footer>`;
 
@@ -217,21 +217,53 @@ function startProject(){
   const planText=config?config.details.map(([label,item])=>`${label}: ${item||'—'}`).join('\n'):'';
   const carriedPlan=config?`<div class="carried-plan"><strong>✓ Your ${config.title} plan is attached</strong><p>Your selections have been carried forward. Review them below, then add your contact details.</p><dl>${config.details.map(([label,item])=>`<dt>${escapeHtml(label)}</dt><dd>${escapeHtml(item||'—')}</dd>`).join('')}</dl></div>`:'';
   const successUrl=config?`enquiry-received.html?${params.toString()}`:'enquiry-received.html';
-  return shell(`<section class="form-page"><div class="container"><div class="form-shell"><div><p class="eyebrow">Start Your Project</p><h1>${config?'Review and send your plan.':'Tell us about your home.'}</h1><p>${config?'Your planning choices are ready. Complete your details and send the same plan for review.':'Share your requirements and we’ll contact you to discuss the next steps.'} Submission does not automatically confirm a visit.</p>${carriedPlan}<div class="upload-box">⇧<br/>Project photos (optional)<br/><small>Drag and drop or click to upload</small></div></div><form class="form-grid" data-demo-form data-success="${successUrl}">${field('Service',`<select name="service"><option${selected(config?.service||'','')}>Select a service</option><option${selected(config?.service,'Curtains & Blinds')}>Curtains & Blinds</option><option${selected(config?.service,'Wardrobes & Storage')}>Wardrobes & Storage</option><option${selected(config?.service,'Full Home Interiors')}>Full Home Interiors</option></select>`)}${field('Location',`<input name="location" placeholder="Town or area" value="${escapeHtml(value('location'))}" required/>`)}${field('Budget range',`<select name="budget"><option>Select a budget range</option><option${selected(value('budget'),'Under ₹2 lakh')}>Under ₹2 lakh</option><option${selected(value('budget'),'₹2–5 lakh')}>₹2–5 lakh</option><option${selected(value('budget'),'₹5 lakh+')}>₹5 lakh+</option><option${selected(value('budget'),'Not decided')}>Not decided</option></select>`)}${field('Preferred timing',`<select name="timing"><option>Select timing</option><option${selected(value('timing'),'Within 3 months')}>Within 3 months</option><option${selected(value('timing'),'3–6 months')}>3–6 months</option><option${selected(value('timing'),'Flexible')}>Flexible</option></select>`)}${field('Name','<input name="name" placeholder="Your name" required/>')}${field('Email','<input name="email" type="email" placeholder="you@example.com" required/>')}<label class="field span-two">Tell us about your project<textarea name="project" placeholder="Your rooms, needs and priorities">${escapeHtml(planText)}</textarea></label><label class="span-two"><input type="checkbox" required/> I agree to the Privacy Policy and Terms &amp; Consultation Policy.</label><button class="button span-two" type="submit">Submit Enquiry →</button></form></div></div></section>`);
+  return shell(`<section class="form-page"><div class="container"><div class="form-shell"><div><p class="eyebrow">Start Your Project</p><h1>${config?'Review and send your plan.':'Tell us about your home.'}</h1><p>${config?'Your planning choices are ready. Complete your details and send the same plan for review.':'Share your requirements and we’ll contact you to discuss the next steps.'} Submission does not automatically confirm a visit.</p>${carriedPlan}<div class="upload-box">⇧<br/>Project photos (optional)<br/><small>Drag and drop or click to upload</small></div></div><form class="form-grid" data-demo-form data-api="/api/enquiries" data-success="${successUrl}">${field('Service',`<select name="service" required><option value=""${selected(config?.service||'','')}>Select a service</option><option${selected(config?.service,'Curtains & Blinds')}>Curtains & Blinds</option><option${selected(config?.service,'Wardrobes & Storage')}>Wardrobes & Storage</option><option${selected(config?.service,'Full Home Interiors')}>Full Home Interiors</option></select>`)}<label class="field">Location <span class="optional-label">(optional)</span><input name="location" placeholder="Town or area" value="${escapeHtml(value('location'))}"/></label>${field('Budget range',`<select name="budget"><option>Select a budget range</option><option${selected(value('budget'),'Under ₹2 lakh')}>Under ₹2 lakh</option><option${selected(value('budget'),'₹2–5 lakh')}>₹2–5 lakh</option><option${selected(value('budget'),'₹5 lakh+')}>₹5 lakh+</option><option${selected(value('budget'),'Not decided')}>Not decided</option></select>`)}${field('Preferred timing',`<select name="timing"><option>Select timing</option><option${selected(value('timing'),'Within 3 months')}>Within 3 months</option><option${selected(value('timing'),'3–6 months')}>3–6 months</option><option${selected(value('timing'),'Flexible')}>Flexible</option></select>`)}${field('Name','<input name="name" autocomplete="name" placeholder="Your name" required/>')}${field('Mobile number','<input name="mobile" type="tel" inputmode="tel" autocomplete="tel" pattern="[0-9+() -]{10,20}" placeholder="Your mobile number" required/>')}<label class="field span-two">Email <span class="optional-label">(optional)</span><input name="email" type="email" autocomplete="email" placeholder="you@example.com"/></label><label class="field span-two">Tell us about your project<textarea name="project" placeholder="Your rooms, needs and priorities">${escapeHtml(planText)}</textarea></label><div class="location-share span-two"><div><strong>Share your current location <span class="optional-label">(optional)</span></strong><p>This helps our team understand your service area. You can continue without sharing it.</p></div><button class="button secondary" type="button" data-share-location>⌖ Share Location</button><input type="hidden" name="latitude"/><input type="hidden" name="longitude"/><input type="hidden" name="locationAccuracy"/><span class="location-status" aria-live="polite"></span></div><label class="span-two"><input type="checkbox" required/> I agree to the Privacy Policy and Terms &amp; Consultation Policy.</label><label class="honeypot" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off"/></label><p class="form-status span-two" aria-live="polite"></p><button class="button span-two" type="submit">Submit Enquiry →</button></form></div></div></section>`);
 }
 
-function received(){ return shell(`<section class="form-page"><div class="container"><div class="success-panel"><span class="success-check">✓</span><h1>Your enquiry is ready for review</h1><p>Thank you for getting in touch. We’ve received your details and will review your enquiry.</p></div><div class="next-steps"><article><span class="step-no">1</span><h3>We review your enquiry</h3><p>Our team looks at your project details and photos.</p></article><article><span class="step-no">2</span><h3>Phone discussion</h3><p>We’ll get in touch for a quick call about your project.</p></article><article><span class="step-no">3</span><h3>If suitable, a visit</h3><p>If the project is a good fit, we arrange a suitable time to visit.</p></article></div><div class="notice blue"><strong>Please note:</strong> A visit is not automatically confirmed. All enquiries are reviewed and discussed first.</div></div></section>`); }
+function received(){
+  const {params,plan,config}=planDetails();
+  const articleIndexes={curtains:[0,1,4],wardrobe:[2,3,4],home:[4,5,6]};
+  const related=(articleIndexes[plan]||[0,4,5]).map(index=>adviceCards[index]);
+  const phoneDisplay='9736485128';
+  const whatsappText=encodeURIComponent(`Hello AK Interiors, I have submitted ${config?`my ${config.title} plan`:'an enquiry'} and would like to discuss it or arrange a quick consultation.`);
+  const requestId=params.get('requestId');
+  const requestCard=requestId?`<div class="request-receipt"><div><span>Your request ID</span><strong>${escapeHtml(requestId)}</strong><small>Keep this ID to check your latest stage at any time.</small></div><a class="button" href="track-request.html?requestId=${encodeURIComponent(requestId)}">Track My Request →</a></div>`:'';
+  const planSnapshot=requestCard+(config?`<aside class="received-plan"><p class="eyebrow">Your submitted plan</p><h2>${config.title}</h2><dl>${config.details.map(([label,item])=>`<dt>${escapeHtml(label)}</dt><dd>${escapeHtml(item||'—')}</dd>`).join('')}</dl></aside>`:'');
+  return shell(`<section class="form-page received-page"><div class="container"><div class="success-panel"><span class="success-check">✓</span><p class="eyebrow">Enquiry received</p><h1>${config?`Your ${config.title} plan is ready for review`:'Your enquiry is ready for review'}</h1><p>Thank you for getting in touch. Our team will review the details and contact you for a focused discussion.</p></div><div class="received-layout"><div><div class="next-steps"><article><span class="step-no">1</span><h3>We review your enquiry</h3><p>We check your selected requirements, measurements and preferences.</p></article><article><span class="step-no">2</span><h3>Phone discussion</h3><p>We clarify priorities, practical options and the suitable next step.</p></article><article><span class="step-no">3</span><h3>If suitable, a visit</h3><p>We arrange a convenient site visit for measurements and confirmation.</p></article></div><div class="notice blue"><strong>Please note:</strong> A visit is confirmed only after we review and discuss your requirements.</div></div>${planSnapshot}</div><section class="quick-connect" aria-labelledby="quick-connect-title"><div><p class="eyebrow">Need help sooner?</p><h2 id="quick-connect-title">Not sure about something? Talk to us directly.</h2><p>Call or WhatsApp AK Interiors to discuss your plan or request a convenient time for a quick consultation.</p></div><div class="connect-actions"><a class="button call-button" href="tel:+919736485128"><span aria-hidden="true">☎</span> Call ${phoneDisplay}</a><a class="button whatsapp-button" href="https://wa.me/919736485128?text=${whatsappText}" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3a12 12 0 0 0-10.3 18.2L4 28l7-1.7A12 12 0 1 0 16 3Zm0 21.8c-1.8 0-3.5-.5-5-1.4l-.4-.2-4.1 1 1.1-4-.3-.4A9.7 9.7 0 1 1 16 24.8Zm5.3-7.3c-.3-.1-1.7-.8-2-1-.3-.1-.5-.1-.7.2l-.9 1.1c-.2.2-.4.2-.7.1-2-.8-3.4-1.9-4.5-3.8-.2-.3 0-.5.1-.7l.6-.7c.2-.2.2-.4.3-.6.1-.2 0-.5 0-.7l-.9-2.1c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.4-1.2 1.2-1.2 2.9s1.2 3.3 1.4 3.5c.2.2 2.4 3.7 5.9 5.2.8.4 1.5.6 2 .7.8.3 1.6.2 2.2.1.7-.1 1.7-.7 1.9-1.4.2-.7.2-1.3.2-1.4-.1-.3-.3-.4-.6-.5Z"/></svg> WhatsApp Us</a></div></section><div class="trust-mini" aria-label="AK Interiors trust indicators"><article><strong>1,000+</strong><span>Happy Homes</span></article><article><strong>20+</strong><span>Years of Experience</span></article><article><strong>4.9/5.0</strong><span>Average Customer Rating</span></article><article><strong>200+</strong><span>Areas Served</span></article></div><section class="received-guides"><div class="section-heading-inline"><div><p class="eyebrow">Helpful while you wait</p><h2>Advice related to your enquiry</h2></div><a href="home-advice.html">View all guides →</a></div><div class="content-grid">${related.map(item=>imgCard(item[0],item[1],item[2],item[3],'Read guide')).join('')}</div></section></div></section>`);
+}
 
 function contact(){ return shell(`<section class="form-page"><div class="container contact-grid"><article class="contact-panel"><p class="eyebrow">Contact & Service Areas</p><h1>Get in Touch</h1><p>We’d love to hear about your project. Reach out using the options below or send us a service-area enquiry.</p><a class="button" href="start-project.html">Request a Call</a> <a class="button" href="start-project.html">Start an Enquiry</a><hr style="margin:28px 0;border:0;border-top:1px solid #ddd"/>${field('Service Area Enquiry','<input placeholder="Town or area"/>')}<a class="button" href="start-project.html">Send Enquiry →</a></article><aside class="service-area"><div><h2>Our Service Areas</h2><h3>Kangra<br/>Himachal Pradesh</h3><p>We undertake projects across Kangra and surrounding areas.</p></div></aside></div></section>`); }
 
-const policyText={privacy:[['Data we collect','We may collect your name, contact details, project information, photos and other details you provide through our website or during conversations.'],['Purpose','We use your information to respond to enquiries, discuss and plan your project, arrange visits where suitable and provide our services.'],['Retention','We keep your information only for as long as necessary to fulfil these purposes or as required by law.'],['Your choices','You can request access, updates or deletion of your information by contacting us.']],terms:[['Estimates and limitations','Any estimate or initial advice is based on the information available at the time. Final scope, specification and costs are confirmed after consultation and site review where appropriate.'],['Consultation booking','After reviewing your enquiry, we contact you to discuss your project. A visit is not automatically confirmed.'],['Scope approval','Work proceeds once the scope, design, quotation and project details have been agreed in writing.'],['Changes','Changes to scope, materials, timing or cost require written approval before work continues.']]};
+const policyText={privacy:[['Data we collect','We may collect your name, contact details, project information, photos and other details you provide. If you choose Share Location, we also collect the coordinates supplied by your browser to confirm our service area. Location sharing is optional.'],['Purpose','We use your information to respond to enquiries, discuss and plan your project, confirm service coverage, arrange visits where suitable and provide our services.'],['Retention','We keep your information only for as long as necessary to fulfil these purposes or as required by law.'],['Your choices','You can decline location sharing and still submit an enquiry. You can also request access, updates or deletion of your information by contacting us.']],terms:[['Estimates and limitations','Any estimate or initial advice is based on the information available at the time. Final scope, specification and costs are confirmed after consultation and site review where appropriate.'],['Consultation booking','After reviewing your enquiry, we contact you to discuss your project. A visit is not automatically confirmed.'],['Scope approval','Work proceeds once the scope, design, quotation and project details have been agreed in writing.'],['Changes','Changes to scope, materials, timing or cost require written approval before work continues.']]};
 function policy(kind){ const title=kind==='privacy'?'Privacy Policy':'Terms & Consultation Policy'; return shell(`<section class="form-page"><div class="container policy"><p class="eyebrow">AK Interiors</p><h1>${title}</h1><p>This readable draft explains how we handle ${kind==='privacy'?'your personal information':'enquiries, consultations and project scope'}.</p>${policyText[kind].map((x,i)=>`<article><h2>${i+1}. ${x[0]}</h2><p>${x[1]}</p></article>`).join('')}</div></section>`); }
 
 function dashboard(){ return dashboardShell(`<div class="dashboard-head"><h1>Enquiries</h1><a class="button" href="start-project.html">+ New Enquiry</a></div><div class="filters">${['Status','Service','Location','Date range'].map(x=>field(x,'<select><option>All</option></select>')).join('')}</div><div class="data-card"><table class="data-table"><thead><tr><th>ID</th><th>Service</th><th>Location</th><th>Budget</th><th>Timing</th><th>Status</th></tr></thead><tbody>${[['ENQ-001','Curtains & Blinds','Kangra','Mid range','3–6 months','New'],['ENQ-002','Wardrobes','Dharamshala','Not specified','Flexible','In review'],['ENQ-003','Full Home','Kangra','Mid to high','1–3 months','Contacted'],['ENQ-004','New build','Palampur','Not specified','Flexible','New'],['ENQ-005','Wardrobes','Kangra','Low to mid','3–6 months','In review']].map(r=>`<tr>${r.map((c,i)=>i===5?`<td><span class="status ${c==='In review'?'review':c==='Contacted'?'contacted':''}">${c}</span></td>`:`<td>${i===0?`<a href="enquiry-detail.html">${c}</a>`:c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`); }
 function dashboardShell(content){ return `<main class="dashboard-shell"><aside class="dashboard-sidebar"><div class="dashboard-logo">AK INTERIORS</div><nav class="dashboard-nav"><a href="index.html">⌂ Overview</a><a class="active" href="enquiry-dashboard.html">✉ Enquiries</a><a href="#">▣ Visits</a></nav></aside><section class="dashboard-main">${content}</section></main>`; }
 function detail(){ return dashboardShell(`<div class="dashboard-head"><div><a href="enquiry-dashboard.html">← Back to enquiries</a><h1>ENQ-002 <span class="status review">In review</span></h1></div></div><div class="detail-grid"><article class="detail-card"><h2>Service brief</h2><p>Wardrobes for an existing home. The customer is looking for a modern, functional design with natural materials.</p><dl><dt>Location</dt><dd>Dharamshala</dd><dt>Budget range</dt><dd>Mid to high</dd><dt>Preferred timing</dt><dd>3–6 months</dd></dl></article><article class="detail-card"><h2>Project photos</h2><div class="photo-strip"><img src="${A}wardrobe-room.png" alt="Project"/><img src="${A}curtains-room.png" alt="Project"/><img src="${A}full-home-room.png" alt="Project"/></div></article><article class="detail-card"><h2>Notes</h2><p>Client prefers an open, organised layout and will discuss material options and sustainability during the call.</p>${field('Review status','<select><option>In review</option><option>Contacted</option><option>Ready for visit</option></select>')}</article><article class="detail-card"><h2>Actions</h2><div style="display:flex;flex-wrap:wrap;gap:10px"><button class="button secondary">Request info</button><button class="button secondary">Arrange call</button><button class="button">Ready for visit</button></div></article></div>`); }
 
-const renderers={services:servicesOverview,curtains:()=>servicePage('curtains'),wardrobes:()=>servicePage('wardrobes'),kitchens:()=>servicePage('kitchens'),'full-home':()=>servicePage('full-home'),'other-services':()=>servicePage('other-services'),materials:()=>servicePage('materials'),'plan-home':planHome,'curtains-planner':curtainsPlanner,'wardrobe-planner':wardrobePlanner,'project-planner':projectPlanner,estimate,commitment,journey,projects,'project-story':projectStory,advice,guide,'article-curtains':()=>articleGuide('curtains'),'article-privacy':()=>articleGuide('privacy'),'article-small-wardrobes':()=>articleGuide('smallWardrobes'),'article-hinged-sliding':()=>articleGuide('hingedSliding'),'article-quotation':()=>articleGuide('quotation'),'article-advance':()=>articleGuide('advance'),about,faqs,'start-project':startProject,received,contact,privacy:()=>policy('privacy'),terms:()=>policy('terms'),dashboard,detail};
+const enquiryStages={
+  new:['Request received','We have safely received the enquiry.'],
+  reviewing:['Under review','Our team is reviewing the requirements and service area.'],
+  contacted:['Customer contacted','Our team has started the project discussion.'],
+  visit_scheduled:['Visit scheduled','A site visit has been arranged with the customer.'],
+  quotation:['Quotation in progress','The scope and quotation are being prepared.'],
+  approved:['Approved','The customer has approved the agreed scope.'],
+  in_progress:['Work in progress','The AK Interiors team is working on the project.'],
+  completed:['Completed','The project has reached handover or completion.'],
+  closed:['Closed','This request has been closed.']
+};
+const stageOptions=selectedStatus=>Object.entries(enquiryStages).map(([value,[label]])=>`<option value="${value}"${value===selectedStatus?' selected':''}>${label}</option>`).join('');
+
+function trackRequest(){
+  const requestId=new URLSearchParams(window.location.search).get('requestId')||'';
+  return shell(`<section class="form-page tracking-page"><div class="container"><div class="tracking-intro"><p class="eyebrow">Customer request tracker</p><h1>Track your AK Interiors request</h1><p>Enter the request ID shown after you submitted your enquiry. You will see the latest stage shared by our team.</p><form class="tracking-form" data-track-form><label class="field">Request ID<input name="requestId" value="${escapeHtml(requestId)}" placeholder="AKI-2026-XXXXXXXXXX" autocomplete="off" required/></label><button class="button" type="submit">Check Status →</button></form></div><div class="tracking-result" data-track-result aria-live="polite"><p>Enter your request ID to view its current stage.</p></div><div class="tracking-help"><strong>Need help finding your request?</strong><span>Call <a href="tel:+919736485128">9736485128</a> or contact us on WhatsApp.</span></div></div></section>`);
+}
+
+function dashboardLive(){
+  return dashboardShell(`<div class="dashboard-head"><div><p class="eyebrow">AK team workspace</p><h1>Customer Enquiries</h1></div><a class="button" href="start-project.html">+ New Enquiry</a></div><section class="admin-access" data-admin-access><div><h2>Connect the live dashboard</h2><p>Enter the private team access key from your deployment settings. It stays in this browser session.</p></div><form><input type="password" name="adminKey" placeholder="Team access key" required/><button class="button" type="submit">Open Dashboard</button></form><p class="admin-message" aria-live="polite"></p></section><div class="dashboard-live" data-dashboard-live hidden><div class="dashboard-summary" data-dashboard-summary></div><div class="data-card"><table class="data-table"><thead><tr><th>Request ID</th><th>Customer</th><th>Contact</th><th>Service</th><th>Location</th><th>Submitted</th><th>Lead stage</th></tr></thead><tbody data-enquiry-rows></tbody></table></div><p class="admin-message" data-dashboard-message aria-live="polite"></p></div>`);
+}
+
+const renderers={services:servicesOverview,curtains:()=>servicePage('curtains'),wardrobes:()=>servicePage('wardrobes'),kitchens:()=>servicePage('kitchens'),'full-home':()=>servicePage('full-home'),'other-services':()=>servicePage('other-services'),materials:()=>servicePage('materials'),'plan-home':planHome,'curtains-planner':curtainsPlanner,'wardrobe-planner':wardrobePlanner,'project-planner':projectPlanner,estimate,commitment,journey,projects,'project-story':projectStory,advice,guide,'article-curtains':()=>articleGuide('curtains'),'article-privacy':()=>articleGuide('privacy'),'article-small-wardrobes':()=>articleGuide('smallWardrobes'),'article-hinged-sliding':()=>articleGuide('hingedSliding'),'article-quotation':()=>articleGuide('quotation'),'article-advance':()=>articleGuide('advance'),about,faqs,'start-project':startProject,received,contact,privacy:()=>policy('privacy'),terms:()=>policy('terms'),dashboard:dashboardLive,detail,track:trackRequest};
 const page=document.body.dataset.page;
 if(page==='project-story'){
   const storySlug=new URLSearchParams(window.location.search).get('project') || 'bedroom-fitted-storage';
@@ -264,7 +296,119 @@ document.querySelectorAll('[data-plan-next]').forEach(link=>link.addEventListene
   });
   window.location.href=`your-plan-estimate.html?${params.toString()}`;
 }));
-document.querySelectorAll('[data-demo-form]').forEach(form=>form.addEventListener('submit',event=>{event.preventDefault();window.location.href=form.dataset.success;}));
+document.querySelectorAll('[data-share-location]').forEach(button=>button.addEventListener('click',()=>{
+  const form=button.closest('form');
+  const status=form.querySelector('.location-status');
+  if(!navigator.geolocation){status.textContent='Location sharing is not supported by this browser. You can continue without it.';return;}
+  button.disabled=true;
+  button.textContent='Getting location…';
+  status.textContent='Your browser may ask for location permission.';
+  navigator.geolocation.getCurrentPosition(position=>{
+    form.elements.latitude.value=String(position.coords.latitude);
+    form.elements.longitude.value=String(position.coords.longitude);
+    form.elements.locationAccuracy.value=String(Math.round(position.coords.accuracy));
+    button.textContent='✓ Location Shared';
+    status.textContent=`Location added (accuracy about ${Math.round(position.coords.accuracy)} metres).`;
+  },()=>{
+    button.disabled=false;
+    button.textContent='⌖ Share Location';
+    status.textContent='Location was not shared. You can submit your enquiry without it.';
+  },{enableHighAccuracy:true,timeout:10000,maximumAge:60000});
+}));
+document.querySelectorAll('[data-demo-form]').forEach(form=>form.addEventListener('submit',async event=>{
+  event.preventDefault();
+  const button=form.querySelector('button[type="submit"]');
+  const status=form.querySelector('.form-status');
+  if(!form.dataset.api){window.location.href=form.dataset.success;return;}
+  const values=Object.fromEntries(new FormData(form).entries());
+  const query=new URLSearchParams(window.location.search);
+  values.planType=query.get('plan')||'';
+  values.planData=Object.fromEntries([...new Set(query.keys())].filter(key=>key!=='v').map(key=>[key,query.getAll(key).length>1?query.getAll(key):query.get(key)]));
+  button.disabled=true;
+  button.textContent='Saving your enquiry…';
+  status.textContent='Securely saving your details.';
+  status.classList.remove('error');
+  try{
+    const response=await fetch(form.dataset.api,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(values)});
+    const result=await response.json().catch(()=>({}));
+    if(!response.ok)throw new Error(result.message||'We could not save your enquiry.');
+    const destination=new URL(form.dataset.success,window.location.href);
+    if(result.requestId)destination.searchParams.set('requestId',result.requestId);
+    window.location.href=destination.href;
+  }catch(error){
+    status.textContent=`${error.message} You can call or WhatsApp us on 9736485128.`;
+    status.classList.add('error');
+    button.disabled=false;
+    button.textContent='Submit Enquiry →';
+  }
+}));
+
+const trackingForm=document.querySelector('[data-track-form]');
+if(trackingForm){
+  const resultPanel=document.querySelector('[data-track-result]');
+  const loadRequest=async requestId=>{
+    const normalized=requestId.trim().toUpperCase();
+    if(!normalized)return;
+    resultPanel.innerHTML='<p>Checking your request…</p>';
+    try{
+      const response=await fetch(`/api/enquiries?requestId=${encodeURIComponent(normalized)}`);
+      const result=await response.json().catch(()=>({}));
+      if(!response.ok)throw new Error(result.message||'Unable to check this request.');
+      const enquiry=result.enquiry;
+      const [label,description]=enquiryStages[enquiry.status]||[enquiry.status,'Your request is being processed.'];
+      const stageKeys=Object.keys(enquiryStages).filter(key=>key!=='closed');
+      const currentIndex=Math.max(0,stageKeys.indexOf(enquiry.status));
+      resultPanel.innerHTML=`<p class="eyebrow">Request ${escapeHtml(enquiry.requestId)}</p><h2>${escapeHtml(label)}</h2><p>${escapeHtml(description)}</p><div class="tracking-meta"><span><strong>Service</strong>${escapeHtml(enquiry.service||'Not specified')}</span><span><strong>Area</strong>${escapeHtml(enquiry.location||'Not shared')}</span><span><strong>Last updated</strong>${new Date(enquiry.statusUpdatedAt).toLocaleString('en-IN')}</span></div><ol class="status-progress">${stageKeys.map((key,index)=>`<li class="${index<currentIndex?'done':index===currentIndex?'current':''}"><span>${index<currentIndex?'✓':index+1}</span>${escapeHtml(enquiryStages[key][0])}</li>`).join('')}</ol>`;
+      history.replaceState(null,'',`track-request.html?requestId=${encodeURIComponent(normalized)}`);
+    }catch(error){resultPanel.innerHTML=`<p class="tracking-error">${escapeHtml(error.message)}</p>`;}
+  };
+  trackingForm.addEventListener('submit',event=>{event.preventDefault();loadRequest(new FormData(trackingForm).get('requestId'));});
+  const initialId=new URLSearchParams(window.location.search).get('requestId');
+  if(initialId)loadRequest(initialId);
+}
+
+const adminAccess=document.querySelector('[data-admin-access]');
+if(adminAccess){
+  const live=document.querySelector('[data-dashboard-live]');
+  const rowsContainer=document.querySelector('[data-enquiry-rows]');
+  const dashboardMessage=document.querySelector('[data-dashboard-message]');
+  const renderRows=enquiries=>{
+    document.querySelector('[data-dashboard-summary]').innerHTML=`<article><strong>${enquiries.length}</strong><span>Total enquiries</span></article><article><strong>${enquiries.filter(item=>['new','reviewing'].includes(item.status)).length}</strong><span>Awaiting action</span></article><article><strong>${enquiries.filter(item=>item.latitude!=null).length}</strong><span>Locations shared</span></article>`;
+    rowsContainer.innerHTML=enquiries.length?enquiries.map(item=>`<tr><td><strong>${escapeHtml(item.request_id||'Pending ID')}</strong></td><td>${escapeHtml(item.customer_name)}</td><td><a href="tel:${escapeHtml(item.mobile)}">${escapeHtml(item.mobile)}</a>${item.email?`<small>${escapeHtml(item.email)}</small>`:''}</td><td>${escapeHtml(item.service)}</td><td>${item.latitude!=null?`<a href="https://www.google.com/maps?q=${item.latitude},${item.longitude}" target="_blank" rel="noopener">${escapeHtml(item.location||'Shared pin')} ↗</a>`:escapeHtml(item.location||'Not shared')}</td><td>${new Date(item.created_at).toLocaleDateString('en-IN')}</td><td><select data-stage-select data-previous="${escapeHtml(item.status)}" data-request-id="${escapeHtml(item.request_id||'')}">${stageOptions(item.status)}</select></td></tr>`).join(''):'<tr><td colspan="7">No enquiries yet.</td></tr>';
+  };
+  const loadDashboard=async key=>{
+    const response=await fetch('/api/enquiries',{headers:{'x-admin-key':key}});
+    const result=await response.json().catch(()=>({}));
+    if(!response.ok)throw new Error(result.message||'Unable to open the dashboard.');
+    sessionStorage.setItem('akAdminKey',key);
+    renderRows(result.enquiries);
+    live.hidden=false;
+    adminAccess.hidden=true;
+  };
+  adminAccess.querySelector('form').addEventListener('submit',async event=>{
+    event.preventDefault();
+    const key=new FormData(event.currentTarget).get('adminKey');
+    const message=adminAccess.querySelector('.admin-message');
+    message.textContent='Connecting…';
+    try{await loadDashboard(key);}catch(error){message.textContent=error.message;}
+  });
+  live.addEventListener('change',async event=>{
+    const select=event.target.closest('[data-stage-select]');
+    if(!select)return;
+    const previous=select.dataset.previous||'';
+    select.disabled=true;
+    dashboardMessage.textContent='Updating the customer’s request stage…';
+    try{
+      const response=await fetch('/api/enquiries',{method:'PATCH',headers:{'Content-Type':'application/json','x-admin-key':sessionStorage.getItem('akAdminKey')||''},body:JSON.stringify({requestId:select.dataset.requestId,status:select.value})});
+      const result=await response.json().catch(()=>({}));
+      if(!response.ok)throw new Error(result.message||'The stage could not be updated.');
+      select.dataset.previous=select.value;
+      dashboardMessage.textContent=`${select.dataset.requestId} updated to ${enquiryStages[select.value][0]}. The customer tracker now shows this stage.`;
+    }catch(error){if(previous)select.value=previous;dashboardMessage.textContent=error.message;}finally{select.disabled=false;}
+  });
+  const savedKey=sessionStorage.getItem('akAdminKey');
+  if(savedKey)loadDashboard(savedKey).catch(()=>sessionStorage.removeItem('akAdminKey'));
+}
 document.querySelectorAll('.project-filters .pill').forEach(pill=>pill.addEventListener('click',()=>{
   const selected=pill.dataset.filter;
   document.querySelectorAll('.project-filters .pill').forEach(button=>{
