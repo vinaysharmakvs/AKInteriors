@@ -17,7 +17,7 @@ const header = () => `
     <a class="brand" href="index.html"><span class="brand-mark">AK<span>✦</span></span><span class="brand-copy"><strong>AK INTERIORS</strong><small>Designing Dream Spaces</small></span></a>
     <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav">Menu</button>
     <nav id="primary-nav" class="main-nav" aria-label="Primary navigation">
-      <a href="services.html">Services</a><a href="plan-your-home.html">Plan Your Home</a><a href="service-commitment.html">Our Commitment</a><a href="projects.html">Projects</a><a href="home-advice.html">Home Advice</a>
+      <a href="services.html">Services</a><a href="plan-your-home.html">Plan Your Home</a><a href="service-commitment.html">Our Commitment</a><a href="projects.html">Projects</a><a href="home-advice.html">Home Advice</a><a href="track-request.html">Track Request</a>
     </nav>
     <a class="button button-small header-cta" href="start-project.html">Start Your Project <span>→</span></a>
   </header>`;
@@ -346,9 +346,14 @@ document.querySelectorAll('[data-demo-form]').forEach(form=>form.addEventListene
 const trackingForm=document.querySelector('[data-track-form]');
 if(trackingForm){
   const resultPanel=document.querySelector('[data-track-result]');
+  const renderTrackingError=()=>{
+    const whatsappMessage=encodeURIComponent('Hello AK Interiors, I am unable to track my request ID and need assistance.');
+    resultPanel.innerHTML=`<div class="tracking-error-card"><span class="tracking-error-icon" aria-hidden="true">!</span><div><h2>Please enter the correct request ID</h2><p>We could not find or verify this request. Check the ID shown on your enquiry confirmation and try again. It should begin with <strong>AKI-</strong>.</p><p>For immediate resolution, call or WhatsApp AK Interiors.</p><div class="tracking-error-actions"><a class="button" href="tel:+919736485128">☎ Call 9736485128</a><a class="button whatsapp-button" href="https://wa.me/919736485128?text=${whatsappMessage}" target="_blank" rel="noopener noreferrer">WhatsApp Us</a></div></div></div>`;
+  };
   const loadRequest=async requestId=>{
     const normalized=requestId.trim().toUpperCase();
     if(!normalized)return;
+    if(!/^AKI-\d{4}-[A-F0-9]{10}$/.test(normalized)){renderTrackingError();return;}
     resultPanel.innerHTML='<p>Checking your request…</p>';
     try{
       const response=await fetch(`/api/enquiries?requestId=${encodeURIComponent(normalized)}`);
@@ -360,7 +365,7 @@ if(trackingForm){
       const currentIndex=Math.max(0,stageKeys.indexOf(enquiry.status));
       resultPanel.innerHTML=`<p class="eyebrow">Request ${escapeHtml(enquiry.requestId)}</p><h2>${escapeHtml(label)}</h2><p>${escapeHtml(description)}</p><div class="tracking-meta"><span><strong>Service</strong>${escapeHtml(enquiry.service||'Not specified')}</span><span><strong>Area</strong>${escapeHtml(enquiry.location||'Not shared')}</span><span><strong>Last updated</strong>${new Date(enquiry.statusUpdatedAt).toLocaleString('en-IN')}</span></div><ol class="status-progress">${stageKeys.map((key,index)=>`<li class="${index<currentIndex?'done':index===currentIndex?'current':''}"><span>${index<currentIndex?'✓':index+1}</span>${escapeHtml(enquiryStages[key][0])}</li>`).join('')}</ol>`;
       history.replaceState(null,'',`track-request.html?requestId=${encodeURIComponent(normalized)}`);
-    }catch(error){resultPanel.innerHTML=`<p class="tracking-error">${escapeHtml(error.message)}</p>`;}
+    }catch(error){renderTrackingError();}
   };
   trackingForm.addEventListener('submit',event=>{event.preventDefault();loadRequest(new FormData(trackingForm).get('requestId'));});
   const initialId=new URLSearchParams(window.location.search).get('requestId');
