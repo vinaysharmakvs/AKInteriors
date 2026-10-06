@@ -28,11 +28,6 @@ navigation.addEventListener('click', () => {
   menuButton.setAttribute('aria-expanded', 'false');
 });
 
-document.querySelector('#planner-form').addEventListener('submit', (event) => {
-  event.preventDefault();
-  window.location.href = 'curtains-planner.html';
-});
-
 const videoModal = document.querySelector('#video-modal');
 const videoPlayer = document.querySelector('#video-player');
 const videoModalTitle = document.querySelector('#video-modal-title');
