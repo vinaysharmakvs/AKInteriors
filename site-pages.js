@@ -272,6 +272,11 @@ if(page==='project-story'){
   document.title=`${pageNames[page]||'AK Interiors'} | AK Interiors`;
 }
 document.querySelector('#app').innerHTML=(renderers[page]||servicesOverview)();
+if(page==='start-project'){
+  const intro=document.querySelector('.form-shell > div');
+  intro?.querySelector('.upload-box')?.remove();
+  intro?.insertAdjacentHTML('beforeend',`<aside class="start-project-visual"><img src="${A}hero-living-room.png" alt="Warm AK Interiors living room overlooking the hills"/><div class="start-project-help"><p class="eyebrow">Prefer to talk?</p><h2>Let’s discuss your home.</h2><p>Speak directly with AK Interiors for quick guidance about services, planning or your location.</p><div class="start-contact-actions"><a class="button call-button" href="tel:+919736485128">☎ Call 9736485128</a><a class="button whatsapp-button" href="https://wa.me/919736485128?text=${encodeURIComponent('Hello AK Interiors, I would like to discuss my home interior project.')}" target="_blank" rel="noopener noreferrer">WhatsApp Us</a></div></div></aside>`);
+}
 
 const currentParams=new URLSearchParams(window.location.search);
 if(currentParams.get('plan')){
