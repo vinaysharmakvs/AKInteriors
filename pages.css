@@ -216,6 +216,119 @@
 .policy h2 { margin: 0 0 8px; font: 600 25px "Cormorant Garamond",Georgia,serif; }
 .policy article p { margin: 0; color: var(--muted); line-height: 1.65; }
 
+/* Curtain cost calculator */
+.calculator-hero { position:relative; min-height:310px; overflow:hidden; background:#f2eee6; }
+.calculator-hero>img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:72% center; }
+.calculator-hero::after { content:""; position:absolute; inset:0; background:linear-gradient(90deg,rgba(250,248,243,.99) 0%,rgba(250,248,243,.94) 45%,rgba(250,248,243,.15) 74%); }
+.calculator-hero .container { position:relative; z-index:1; }
+.calculator-hero-copy { max-width:650px; padding:42px 0 38px; }
+.calculator-hero-copy h1 { margin:0 0 11px; font:600 clamp(42px,4.3vw,62px)/.98 "Cormorant Garamond",Georgia,serif; }
+.calculator-hero-copy>p:not(.eyebrow) { margin:0 0 14px; color:var(--muted); font-size:15px; }
+.calculator-reassurance { display:inline-flex; align-items:center; padding:9px 13px; border-radius:6px; color:#355548; background:#eaf0e7; font-size:12px; }
+.calculator-page { padding:0 0 42px; background:linear-gradient(145deg,#f7f3eb,#fcfbf7 50%,#eff2e9); }
+.calculator-layout { display:grid; grid-template-columns:minmax(0,1.55fr) minmax(310px,.9fr); gap:14px; align-items:start; padding-top:14px; }
+.calculator-main,.calculator-side { display:grid; gap:14px; }
+.calculator-side { position:sticky; top:14px; }
+.calculator-step,.estimate-card,.calculator-lead-card,.calculation-rules { border:1px solid #ddd8cf; border-radius:12px; background:rgba(255,255,255,.94); box-shadow:0 7px 24px rgba(18,65,50,.045); }
+.calculator-step,.calculator-lead-card { padding:20px; }
+.calculator-step-heading { display:grid; grid-template-columns:34px 1fr; gap:11px; align-items:start; margin-bottom:15px; }
+.calculator-step-heading>span { width:30px; height:30px; display:grid; place-items:center; border-radius:50%; color:#fff; background:#b98424; font-weight:700; }
+.calculator-step-heading .eyebrow { margin:3px 0 5px; font-size:9px; letter-spacing:2px; }
+.calculator-step-heading h2 { margin:0 0 3px; font:600 27px/1.05 "Cormorant Garamond",Georgia,serif; }
+.calculator-step-heading p:last-child { margin:0; color:var(--muted); font-size:12px; line-height:1.45; }
+.calculator-step-heading.compact h2 { font-size:24px; }
+.calculator-service-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+.calculator-service { min-width:0; min-height:116px; padding:13px 9px; display:flex; flex-direction:column; align-items:center; justify-content:center; border:1px solid #ddd8cf; border-radius:7px; color:var(--ink); background:#fff; text-align:center; text-decoration:none; cursor:pointer; font-family:Montserrat,sans-serif; }
+.calculator-service.active { border:1.5px solid var(--green); background:#f0f7f1; box-shadow:inset 0 0 0 1px rgba(17,85,62,.08); }
+.calculator-service.disabled { cursor:not-allowed; opacity:.48; filter:grayscale(.8); background:#f2f1ed; }
+.calculator-service b { color:var(--green); font-size:27px; line-height:1; }
+.calculator-service strong { margin:8px 0 4px; font:600 18px "Cormorant Garamond",Georgia,serif; }
+.calculator-service small { color:var(--muted); font-size:10px; line-height:1.35; }
+.collection-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:9px; }
+.collection-card { position:relative; min-height:78px; padding:10px; display:grid; grid-template-columns:46px 1fr; grid-template-rows:auto auto; column-gap:10px; align-items:center; border:1px solid #ddd8cf; border-radius:7px; background:#fff; cursor:pointer; }
+.collection-card input { position:absolute; opacity:0; pointer-events:none; }
+.collection-card:has(input:checked) { border:1.5px solid var(--green); background:#f2f8f3; box-shadow:inset 0 0 0 1px rgba(17,85,62,.08); }
+.collection-card:has(input:checked)::after { content:"✓"; position:absolute; top:7px; right:7px; width:18px; height:18px; display:grid; place-items:center; border-radius:50%; color:#fff; background:var(--green); font-size:10px; }
+.collection-swatch { grid-row:1/3; width:46px; height:55px; border-radius:4px; background:repeating-linear-gradient(90deg,#d8c6ad 0 5px,#f1e9dc 5px 9px,#bda486 9px 12px); }
+.collection-swatch.premium { background:repeating-linear-gradient(90deg,#c6ad8d 0 4px,#eadfce 4px 8px,#9f8261 8px 10px); }
+.collection-swatch.luxury { background:repeating-linear-gradient(90deg,#8c7764 0 4px,#d7c4a9 4px 9px,#69584a 9px 11px); }
+.collection-card b { align-self:end; font:600 18px "Cormorant Garamond",Georgia,serif; }
+.collection-card small { align-self:start; color:var(--muted); font-size:10px; line-height:1.3; }
+.calculator-rooms { display:grid; gap:12px; }
+.calculator-room { overflow:hidden; border:1px solid #d8ded8; border-radius:9px; background:#fff; }
+.calculator-room-head { display:flex; justify-content:space-between; align-items:center; gap:18px; padding:12px 14px; background:#edf5ef; }
+.calculator-room-head strong { font:600 20px "Cormorant Garamond",Georgia,serif; }
+.calculator-remove-room { border:0; color:#31574a; background:transparent; cursor:pointer; font:11px Montserrat,sans-serif; }
+.calculator-room-body { padding:12px 14px 14px; }
+.calculator-room-controls { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.calculator-room .field { font-size:11px; }
+.calculator-room .field select,.calculator-room .field input { min-height:38px; font-size:12px; }
+.curtain-type-hints { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:10px 0 14px; }
+.curtain-type-hints span { padding:8px; border:1px solid #e2ded6; border-radius:6px; color:var(--muted); font-size:9px; line-height:1.4; }
+.curtain-type-hints span.active { border-color:var(--green); color:var(--ink); background:#f0f7f1; }
+.curtain-type-hints b { display:block; color:var(--ink); font-size:10px; }
+.calculator-subsection { margin-top:13px; }
+.calculator-subsection-head { margin-bottom:7px; }
+.calculator-subsection-head strong { display:block; font-size:12px; }
+.calculator-subsection-head small { color:var(--muted); font-size:9px; }
+.calculator-item { display:grid; grid-template-columns:minmax(100px,1fr) 105px 128px auto; gap:8px; align-items:center; padding:7px 0; border-bottom:1px solid #eeeae3; font-size:11px; }
+.calculator-item.window { grid-template-columns:minmax(100px,1fr) 105px 128px auto; }
+.calculator-item strong { font-size:11px; }
+.calculator-item input { width:100%; height:36px; padding:7px 9px; border:1px solid #d7d3cb; border-radius:5px; font:12px Montserrat,sans-serif; }
+.calculator-item-result { font-weight:600; }
+.calculator-remove { border:0; color:#59635e; background:transparent; cursor:pointer; font-size:10px; }
+.calculator-add { width:100%; min-height:38px; margin-top:8px; border:1px solid var(--green); border-radius:6px; color:var(--green); background:#fff; cursor:pointer; font:600 12px Montserrat,sans-serif; }
+.calculator-add-room { margin-top:12px; min-height:44px; }
+.room-total { margin:10px 0 0; padding:11px; border-radius:6px; color:#173f32; background:#eaf4ec; font-size:11px; line-height:1.5; }
+.room-total strong { display:block; margin-bottom:2px; }
+.blind-items { display:grid; gap:10px; }
+.blind-item { padding:14px; border:1px solid #d8ded8; border-radius:8px; background:#fff; }
+.blind-item header { display:flex; justify-content:space-between; align-items:center; margin-bottom:11px; }
+.blind-item header strong { font:600 19px "Cormorant Garamond",Georgia,serif; }
+.blind-item header button { border:0; color:var(--muted); background:transparent; cursor:pointer; font-size:10px; }
+.blind-fields { display:grid; grid-template-columns:1fr 1fr; gap:9px; }
+.blind-fields .field { font-size:10px; }
+.blind-fields input,.blind-fields select { min-height:38px; font-size:11px; }
+.blind-area-row { display:flex; justify-content:space-between; gap:14px; margin-top:10px; padding:9px 10px; border-radius:6px; background:#f2f5ef; color:var(--muted); font-size:9px; }
+.blind-area-row b { color:var(--ink); }
+.blind-line-estimate { display:flex; justify-content:space-between; gap:12px; margin:8px 0 0; padding:10px; border-radius:6px; background:#e8f1e9; font-size:10px; }
+.blind-rule-note { margin:12px 0 0; color:var(--muted); font-size:10px; line-height:1.5; }
+.blind-estimate-lines { display:grid; gap:8px; margin:18px 0; padding:13px; border-radius:7px; background:rgba(255,255,255,.65); }
+.blind-estimate-lines span { display:flex; justify-content:space-between; gap:15px; color:var(--muted); font-size:10px; }
+.blind-estimate-lines b { color:var(--ink); text-align:right; }
+.estimate-card { padding:20px; background:linear-gradient(135deg,#f8faf5,#eaf3e9); }
+.estimate-card>p:first-child { margin:0 0 5px; color:var(--muted); }
+.estimate-card>strong { display:block; color:#0f3126; font:600 48px/.95 "Cormorant Garamond",Georgia,serif; }
+.estimate-card hr { margin:17px 0; border:0; border-top:1px solid #d8e1d7; }
+.estimate-card>span { font-size:12px; }
+.estimate-card output { display:block; margin:6px 0 14px; color:#b07b1f; font:600 clamp(30px,3vw,42px)/1 "Cormorant Garamond",Georgia,serif; white-space:nowrap; }
+.estimate-note,.estimate-comparison { padding:12px; border-radius:7px; color:#55605a; background:#f5f1e8; font-size:10px; line-height:1.5; }
+.estimate-comparison { margin-bottom:0; color:#244b3d; background:#dfece1; }
+.calculator-lead-form { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.calculator-lead-form .field { font-size:11px; }
+.calculator-lead-form .field input { min-height:39px; font-size:12px; }
+.calculator-lead-form .button,.calculator-consent,.calculator-lead-form .form-status { grid-column:1/-1; }
+.calculator-consent { color:var(--muted); font-size:10px; line-height:1.5; }
+.calculator-consent a { color:var(--green); }
+.calculator-lead-form .button { min-height:46px; padding:0 12px; font-size:11px; }
+.calculator-direct { margin-top:14px; text-align:center; }
+.calculator-direct>span { display:block; margin-bottom:8px; color:var(--muted); font-size:10px; }
+.calculator-direct>div { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.calculator-call,.calculator-whatsapp { min-height:42px; display:flex; align-items:center; justify-content:center; border:1px solid #bd8120; border-radius:6px; color:#9c6817; text-decoration:none; font-size:10px; font-weight:600; }
+.calculator-whatsapp { border-color:var(--green); color:var(--green); }
+.calculation-rules { margin-top:14px; padding:14px 17px; }
+.calculation-rules summary { display:flex; align-items:center; gap:11px; cursor:pointer; list-style:none; }
+.calculation-rules summary>span { width:35px; height:35px; display:grid; place-items:center; border-radius:50%; color:#b17f27; background:#f6ecd7; }
+.calculation-rules summary strong,.calculation-rules summary small { display:block; }
+.calculation-rules summary strong { font:600 20px "Cormorant Garamond",Georgia,serif; }
+.calculation-rules summary small { color:var(--muted); font-size:10px; }
+.calculation-rule-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:9px; margin-top:12px; }
+.calculation-rule-grid article { padding:11px; border:1px solid #e1ddd5; border-radius:7px; background:#fff; }
+.calculation-rule-grid b,.calculation-rule-grid span { display:block; }
+.calculation-rule-grid b { font-size:10px; }
+.calculation-rule-grid span { margin-top:7px; color:var(--muted); font-size:8px; }
+.calculation-rule-grid p { margin:5px 0 0; padding:7px; border-radius:5px; background:#eef4eb; font-size:9px; white-space:nowrap; }
+
 .dashboard-shell { min-height: 100vh; display: grid; grid-template-columns: 250px 1fr; background: #f4f6f4; }
 .dashboard-sidebar { padding: 24px 17px; color: #fff; background: linear-gradient(180deg,#095238,#00603f); }
 .dashboard-logo { margin-bottom: 35px; font: 600 25px "Cormorant Garamond",Georgia,serif; }
@@ -288,6 +401,8 @@
   .status-progress { grid-template-columns:repeat(4,1fr); row-gap:16px; }
   .admin-access { align-items:stretch; flex-direction:column; }
   .filters { grid-template-columns: repeat(2,1fr); }
+  .calculator-layout { grid-template-columns:1fr; }
+  .calculator-side { position:static; grid-template-columns:1fr 1fr; }
 }
 @media (max-width: 640px) {
   .inner-hero { min-height: 430px; align-items: flex-start; }
@@ -328,4 +443,17 @@
   .tracking-error-actions .button { width:100%; }
   .filters { grid-template-columns: 1fr; }
   .project-card img { height: 210px; }
+  .calculator-hero { min-height:410px; }
+  .calculator-hero>img { object-position:65% bottom; }
+  .calculator-hero::after { background:linear-gradient(180deg,rgba(250,248,243,.98),rgba(250,248,243,.88) 55%,rgba(250,248,243,.14)); }
+  .calculator-hero-copy { padding-top:42px; }
+  .calculator-service-grid { grid-template-columns:1fr 1fr; }
+  .collection-grid,.calculator-side,.calculation-rule-grid { grid-template-columns:1fr; }
+  .calculator-room-controls,.calculator-lead-form { grid-template-columns:1fr; }
+  .blind-fields { grid-template-columns:1fr; }
+  .blind-area-row,.blind-line-estimate { align-items:flex-start; flex-direction:column; }
+  .calculator-item,.calculator-item.window { grid-template-columns:1fr 90px; }
+  .calculator-item-result { grid-column:1; }
+  .calculator-remove { grid-column:2; grid-row:2; }
+  .calculator-direct>div { grid-template-columns:1fr; }
 }
