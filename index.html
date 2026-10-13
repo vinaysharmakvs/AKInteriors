@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css?v=20261011-1" />
   </head>
   <body>
     <header class="site-header">
@@ -18,7 +18,14 @@
       </a>
       <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav">Menu</button>
       <nav id="primary-nav" class="main-nav" aria-label="Primary navigation">
-        <a href="services.html">Services</a>
+        <details class="nav-dropdown">
+          <summary>Services</summary>
+          <div class="nav-dropdown-menu">
+            <a href="services.html">Explore All Services</a>
+            <a href="curtain-cost-calculator.html">Curtain &amp; Blind Calculator</a>
+            <a href="design-services-calculator.html">Interior Design Calculator</a>
+          </div>
+        </details>
         <a href="plan-your-home.html">Plan Your Home</a>
         <a href="service-commitment.html">Our Commitment</a>
         <a href="projects.html">Projects</a>
