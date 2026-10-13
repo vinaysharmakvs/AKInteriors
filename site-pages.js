@@ -14,7 +14,7 @@ const pageNames = {
 
 const header = () => `
   <header class="site-header">
-    <a class="brand" href="index.html"><span class="brand-mark">AK<span>✦</span></span><span class="brand-copy"><strong>AK INTERIORS</strong><small>Designing Dream Spaces</small></span></a>
+    <a class="brand" href="index.html" aria-label="AK Interiors home"><img class="brand-logo" src="${A}AK_logo.jpeg" alt="AK Interiors — Designing Dream Spaces"/></a>
     <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav">Menu</button>
     <nav id="primary-nav" class="main-nav" aria-label="Primary navigation">
       <details class="nav-dropdown"><summary>Services</summary><div class="nav-dropdown-menu"><a href="services.html">Explore All Services</a><a href="curtain-cost-calculator.html">Curtain &amp; Blind Calculator</a><a href="design-services-calculator.html">Interior Design Calculator</a></div></details><a href="plan-your-home.html">Plan Your Home</a><a href="service-commitment.html">Our Commitment</a><a href="projects.html">Projects</a><a href="home-advice.html">Home Advice</a><a href="track-request.html">Track Request</a>
@@ -24,9 +24,9 @@ const header = () => `
 
 const footer = () => `
   <footer class="site-footer">
-    <a class="brand footer-brand" href="index.html"><span class="brand-mark">AK<span>✦</span></span><span class="brand-copy"><strong>AK INTERIORS</strong><small>Designing Dream Spaces</small></span></a>
+    <a class="brand footer-brand" href="index.html" aria-label="AK Interiors home"><img class="brand-logo" src="${A}AK_logo.jpeg" alt="AK Interiors — Designing Dream Spaces"/></a>
     <nav aria-label="Footer navigation"><a href="contact.html">Contact</a><span>|</span><a href="track-request.html">Track Request</a><span>|</span><a href="faqs.html">FAQs</a><span>|</span><a href="privacy.html">Privacy</a></nav>
-    <p>Website Strategy, Design &amp; Development by <strong>Tivoro</strong></p>
+    <p>Website Strategy, Design &amp; Development by <a href="https://www.tivoro.in/" target="_blank" rel="noopener noreferrer"><strong>Tivoro</strong></a></p>
   </footer>`;
 
 const shell = content => `${header()}<main class="inner-page">${content}</main>${footer()}`;
