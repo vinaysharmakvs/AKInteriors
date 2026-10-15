@@ -45,11 +45,13 @@
     const windows = room.windows.map((window, windowIndex) => {
       const panels = Math.min(window.panels, type.maxPanels);
       const width = panels * 1.25;
-      return `<div class="calculator-item window"><strong>Window ${windowIndex + 1}</strong><input type="number" min="1" max="${type.maxPanels}" step="1" value="${panels}" aria-label="Panels for window ${windowIndex + 1}" data-window-panels="${windowIndex}"/><span class="calculator-item-result">${Number.isInteger(width) ? width : width.toFixed(2)} ft · ${windowPieces(room.type, panels)} pcs</span><button class="calculator-remove" type="button" data-remove-window="${windowIndex}">Remove</button></div>`;
+      return `<div class="calculator-item window"><strong>Window ${windowIndex + 1}</strong><label class="panel-input"><span>Panels</span><input type="number" min="1" max="${type.maxPanels}" step="1" value="${panels}" aria-label="Panels for window ${windowIndex + 1}" data-window-panels="${windowIndex}"/></label><span class="calculator-item-result">${Number.isInteger(width) ? width : width.toFixed(2)} ft · ${windowPieces(room.type, panels)} pcs</span><button class="calculator-remove" type="button" data-remove-window="${windowIndex}">Remove</button></div>`;
     }).join('');
     const pieces = roomPieces(room);
-    const equation = [room.doors ? `Door${room.doors > 1 ? 's' : ''} ${room.doors * type.door} pcs` : '', ...room.windows.map((window, windowIndex) => `Window ${windowIndex + 1} ${windowPieces(room.type, window.panels)} pcs`)].filter(Boolean).join(' + ');
-    return `<article class="calculator-room" data-room-id="${room.id}"><header class="calculator-room-head"><strong>▱ &nbsp;${room.name}</strong>${state.rooms.length > 1 ? '<button class="calculator-remove-room" type="button" data-remove-room>Remove Room</button>' : ''}</header><div class="calculator-room-body"><div class="calculator-room-controls"><label class="field">Room / Area<select data-room-name>${roomOptions(room.name)}</select></label><label class="field">Curtain Type<select data-curtain-type>${typeOptions(room.type)}</select></label></div><div class="curtain-type-hints"><span class="${room.type === 'rod' ? 'active' : ''}"><b>Rod / Eyelet</b>Actual door minimum: 2 pcs</span><span class="${room.type === 'ripple' ? 'active' : ''}"><b>Ripple Fold</b>Actual door minimum: 2 pcs</span><span class="${room.type === 'channel' ? 'active' : ''}"><b>Channel / Pleated</b>Actual door minimum: 3 pcs</span></div><div class="calculator-subsection"><div class="calculator-subsection-head"><strong>Actual Doors</strong><small>Rod/Ripple = 2 pcs minimum. Channel/Pleated = 3 pcs minimum.</small></div>${doors || '<p class="room-total">No actual doors added.</p>'}<button class="calculator-add" type="button" data-add-door>＋ Add Door</button></div><div class="calculator-subsection"><div class="calculator-subsection-head"><strong>Windows</strong><small>Each panel = 1.25 ft. Enter the panels for each individual window.</small></div>${windows || '<p class="room-total">No windows added.</p>'}<button class="calculator-add" type="button" data-add-window>＋ Add Window</button></div><p class="room-total"><strong>Room total: ${pieces} curtain pcs</strong>${equation ? `${equation} = ${pieces} curtain pcs` : 'Add a door or window to calculate this room.'}</p></div></article>`;
+    const doorEquation = Array.from({ length: room.doors }, (_, doorIndex) => `Door ${doorIndex + 1} – ${type.door} pcs`);
+    const windowEquation = room.windows.map((window, windowIndex) => `Window ${windowIndex + 1} – ${windowPieces(room.type, window.panels)} pcs`);
+    const equation = [...doorEquation, ...windowEquation].join(' + ');
+    return `<article class="calculator-room" data-room-id="${room.id}"><header class="calculator-room-head"><strong>▱ &nbsp;${room.name}</strong>${state.rooms.length > 1 ? '<button class="calculator-remove-room" type="button" data-remove-room>Remove Room</button>' : ''}</header><div class="calculator-room-body"><div class="calculator-room-controls"><label class="field">Room / Area<select data-room-name>${roomOptions(room.name)}</select></label><label class="field">Curtain Type<select data-curtain-type>${typeOptions(room.type)}</select></label></div><div class="curtain-type-hints"><span class="${room.type === 'rod' ? 'active' : ''}"><b>Rod / Eyelet</b>Actual door minimum: 2 pcs</span><span class="${room.type === 'ripple' ? 'active' : ''}"><b>Ripple Fold</b>Actual door minimum: 2 pcs</span><span class="${room.type === 'channel' ? 'active' : ''}"><b>Channel / Pleated</b>Actual door minimum: 3 pcs</span></div><div class="calculator-subsection"><div class="calculator-subsection-head"><strong>Actual Doors</strong><small>Rod/Ripple = 2 pcs minimum. Channel/Pleated = 3 pcs minimum.</small></div>${doors || '<p class="room-total">No actual doors added.</p>'}<button class="calculator-add" type="button" data-add-door>＋ Add Door</button></div><div class="calculator-subsection"><div class="calculator-subsection-head"><strong>Windows</strong><small>Each panel = 1.25 ft. Enter the panels for each individual window.</small></div>${windows || '<p class="room-total">No windows added.</p>'}<button class="calculator-add" type="button" data-add-window>＋ Add Window</button></div><p class="room-total"><strong>${room.name} total: ${pieces} curtain pcs</strong><span class="room-equation">${equation ? `${equation} = ${pieces} pcs` : 'Add a door or window to calculate this room.'}</span></p></div></article>`;
   }
 
   function summaryText() {
@@ -141,13 +143,24 @@
     wooden: { label: 'Wooden Venetian', collections: { Premium: [755, 855], Luxury: [855, 999] } },
     motorized: { label: 'Motorized', collections: {} }
   };
-  let nextId = 2;
-  let blinds = [{ id: 1, type: 'vertical', collection: 'Elegant', width: 4, height: 5 }];
+  const roomNames = ['Living Room', 'Bedroom', 'Dining Room', 'Guest Room', 'Study / Office', 'Other Area'];
+  let nextRoomId = 2;
+  let nextBlindId = 2;
+  let blindRooms = [{
+    id: 1,
+    name: 'Bedroom',
+    blinds: [{ id: 1, type: 'vertical', collection: 'Elegant', width: 4, height: 5 }]
+  }];
   const items = root.querySelector('[data-blind-items]');
   const money = value => `₹${Math.round(value).toLocaleString('en-IN')}`;
   const isMotorized = blind => blind.type === 'motorized';
   const actualArea = blind => Math.max(0, blind.width) * Math.max(0, blind.height);
   const billableArea = blind => Math.max(actualArea(blind), 11);
+  const allBlinds = () => blindRooms.flatMap(room => room.blinds);
+
+  function roomOptions(selected) {
+    return roomNames.map(name => `<option${name === selected ? ' selected' : ''}>${name}</option>`).join('');
+  }
 
   function typeOptions(selected) {
     return Object.entries(rates).map(([value, item]) => `<option value="${value}"${value === selected ? ' selected' : ''}>${item.label}</option>`).join('');
@@ -165,25 +178,58 @@
     return [area * rate[0], area * rate[1]];
   }
 
-  function renderBlind(blind, index) {
+  function roomTotals(room) {
+    let minimum = 0;
+    let maximum = 0;
+    let area = 0;
+    let hasMotor = false;
+    room.blinds.forEach(blind => {
+      area += billableArea(blind);
+      const range = blindRange(blind);
+      if (range) {
+        minimum += range[0];
+        maximum += range[1];
+      } else {
+        hasMotor = true;
+      }
+    });
+    return { minimum, maximum, area, hasMotor };
+  }
+
+  function renderBlind(blind, index, room) {
     const range = blindRange(blind);
-    return `<article class="blind-item" data-blind-id="${blind.id}"><header><strong>Window / Blind ${index + 1}</strong>${blinds.length > 1 ? '<button type="button" data-remove-blind>Remove</button>' : ''}</header><div class="blind-fields"><label class="field">Blind Type<select data-blind-type>${typeOptions(blind.type)}</select></label><label class="field">Collection<select data-blind-collection${isMotorized(blind) ? ' disabled' : ''}>${collectionOptions(blind)}</select></label><label class="field">Width (ft)<input type="number" min="0.5" step="0.5" value="${blind.width}" data-blind-width/></label><label class="field">Height (ft)<input type="number" min="0.5" step="0.5" value="${blind.height}" data-blind-height/></label></div><div class="blind-area-row"><span>Actual area: <b>${actualArea(blind).toFixed(2)} sq.ft.</b></span><span>Billable area: <b>${billableArea(blind).toFixed(2)} sq.ft.</b></span></div><p class="blind-line-estimate">Estimated blind cost <strong>${range ? `${money(range[0])} – ${money(range[1])}` : 'Price on Request'}</strong></p></article>`;
+    return `<article class="blind-item" data-blind-id="${blind.id}"><header><strong>Window ${index + 1} / Blind ${index + 1}</strong>${room.blinds.length > 1 ? '<button type="button" data-remove-blind>Remove</button>' : ''}</header><div class="blind-fields"><label class="field">Blind Type<select data-blind-type>${typeOptions(blind.type)}</select></label><label class="field">Collection<select data-blind-collection${isMotorized(blind) ? ' disabled' : ''}>${collectionOptions(blind)}</select></label><label class="field">Width (ft)<input type="number" min="0.5" step="0.5" value="${blind.width}" data-blind-width/></label><label class="field">Height (ft)<input type="number" min="0.5" step="0.5" value="${blind.height}" data-blind-height/></label></div><div class="blind-area-row"><span>Actual area: <b>${actualArea(blind).toFixed(2)} sq.ft.</b></span><span>Billable area: <b>${billableArea(blind).toFixed(2)} sq.ft.</b></span></div><p class="blind-line-estimate">Estimated blind cost <strong>${range ? `${money(range[0])} – ${money(range[1])}` : 'Price on Request'}</strong></p></article>`;
+  }
+
+  function renderBlindRoom(room) {
+    const totals = roomTotals(room);
+    const subtotal = totals.hasMotor ? 'Price on Request' : `${money(totals.minimum)} – ${money(totals.maximum)}`;
+    return `<article class="blind-room" data-blind-room-id="${room.id}"><header class="blind-room-head"><strong>▱ &nbsp;${room.name}</strong>${blindRooms.length > 1 ? '<button class="calculator-remove-room" type="button" data-remove-blind-room>Remove Room</button>' : ''}</header><div class="blind-room-body"><div class="blind-room-controls"><label class="field">Room / Area<select data-blind-room-name>${roomOptions(room.name)}</select></label></div><div class="blind-items">${room.blinds.map((blind, index) => renderBlind(blind, index, room)).join('')}</div><button class="calculator-add" type="button" data-add-blind>＋ Add Window / Blind</button><p class="room-total blind-room-total"><strong>${room.name} total: ${room.blinds.length} ${room.blinds.length === 1 ? 'blind' : 'blinds'}</strong><span class="room-equation">${totals.area.toFixed(2)} sq.ft. billable area · ${subtotal}</span></p></div></article>`;
   }
 
   function blindSummary() {
+    const blinds = allBlinds();
     const hasMotor = blinds.some(isMotorized);
     const installation = blinds.length ? 500 + (blinds.length - 1) * 100 : 0;
     let minimum = 0;
     let maximum = 0;
-    const lines = blinds.map((blind, index) => {
-      const range = blindRange(blind);
-      if (range) { minimum += range[0]; maximum += range[1]; }
-      return `${index + 1}. ${rates[blind.type].label} — ${isMotorized(blind) ? 'Price on Request' : blind.collection}; ${blind.width} ft × ${blind.height} ft; actual ${actualArea(blind).toFixed(2)} sq.ft.; billable ${billableArea(blind).toFixed(2)} sq.ft.${range ? `; ${money(range[0])}–${money(range[1])}` : ''}`;
+    const lines = [];
+    blindRooms.forEach((room, roomIndex) => {
+      lines.push(`${roomIndex + 1}. ${room.name}`);
+      room.blinds.forEach((blind, blindIndex) => {
+        const range = blindRange(blind);
+        if (range) {
+          minimum += range[0];
+          maximum += range[1];
+        }
+        lines.push(`   Window ${blindIndex + 1} / Blind ${blindIndex + 1}: ${rates[blind.type].label} — ${isMotorized(blind) ? 'Price on Request' : blind.collection}; ${blind.width} ft × ${blind.height} ft; actual ${actualArea(blind).toFixed(2)} sq.ft.; billable ${billableArea(blind).toFixed(2)} sq.ft.${range ? `; ${money(range[0])}–${money(range[1])}` : ''}`);
+      });
     });
     return [`Blinds Estimate Calculator`, ...lines, `Installation: ${money(installation)}`, hasMotor ? 'Estimated investment: Price on Request' : `Estimated investment: ${money(minimum + installation)} – ${money(maximum + installation)}`, `Final pricing is confirmed after site measurement and material selection.`].join('\n');
   }
 
   function update() {
+    const blinds = allBlinds();
     const hasMotor = blinds.some(isMotorized);
     const installation = blinds.length ? 500 + (blinds.length - 1) * 100 : 0;
     let minimum = 0;
@@ -192,9 +238,14 @@
     blinds.forEach(blind => {
       area += billableArea(blind);
       const range = blindRange(blind);
-      if (range) { minimum += range[0]; maximum += range[1]; }
+      if (range) {
+        minimum += range[0];
+        maximum += range[1];
+      }
     });
     root.querySelector('[data-blind-count]').textContent = blinds.length;
+    const label = root.querySelector('[data-blind-label]');
+    if (label) label.textContent = blinds.length === 1 ? 'blind' : 'blinds';
     root.querySelector('[data-blind-area]').textContent = `${area.toFixed(2)} sq.ft.`;
     root.querySelector('[data-blind-investment]').textContent = hasMotor ? 'Price on Request' : `${money(minimum)} – ${money(maximum)}`;
     root.querySelector('[data-blind-installation]').textContent = money(installation);
@@ -207,7 +258,7 @@
   }
 
   function render() {
-    items.innerHTML = blinds.map(renderBlind).join('');
+    items.innerHTML = blindRooms.map(renderBlindRoom).join('');
     update();
   }
 
@@ -228,7 +279,7 @@
     if (service === 'blinds') {
       eyebrow.textContent = 'Blinds Cost Calculator';
       title.innerHTML = 'Plan your blinds with<br/>a clearer cost idea.';
-      copy.textContent = 'Add each window and choose the blind type and collection. Your estimate updates as you plan.';
+      copy.textContent = 'Add each room and its windows, then choose the blind type and collection. Your estimate updates as you plan.';
       document.title = 'Blinds Cost Calculator | AK Interiors';
     } else {
       eyebrow.textContent = 'Curtain Cost Calculator';
@@ -242,19 +293,49 @@
 
   root.addEventListener('click', event => {
     const service = event.target.closest('[data-service-choice]');
-    if (service) { selectService(service.dataset.serviceChoice); return; }
-    if (event.target.closest('[data-add-blind]')) { blinds.push({ id: nextId++, type: 'roller', collection: 'Premium', width: 4, height: 5 }); render(); return; }
-    const element = event.target.closest('[data-blind-id]');
-    if (element && event.target.closest('[data-remove-blind]') && blinds.length > 1) {
-      blinds = blinds.filter(blind => blind.id !== Number(element.dataset.blindId));
+    if (service) {
+      selectService(service.dataset.serviceChoice);
+      return;
+    }
+    if (event.target.closest('[data-add-blind-room]')) {
+      blindRooms.push({ id: nextRoomId++, name: 'Living Room', blinds: [{ id: nextBlindId++, type: 'roller', collection: 'Premium', width: 4, height: 5 }] });
+      render();
+      return;
+    }
+    const roomElement = event.target.closest('[data-blind-room-id]');
+    if (!roomElement) return;
+    const room = blindRooms.find(item => item.id === Number(roomElement.dataset.blindRoomId));
+    if (!room) return;
+    if (event.target.closest('[data-remove-blind-room]') && blindRooms.length > 1) {
+      blindRooms = blindRooms.filter(item => item.id !== room.id);
+      render();
+      return;
+    }
+    if (event.target.closest('[data-add-blind]')) {
+      room.blinds.push({ id: nextBlindId++, type: 'roller', collection: 'Premium', width: 4, height: 5 });
+      render();
+      return;
+    }
+    const blindElement = event.target.closest('[data-blind-id]');
+    if (blindElement && event.target.closest('[data-remove-blind]') && room.blinds.length > 1) {
+      room.blinds = room.blinds.filter(blind => blind.id !== Number(blindElement.dataset.blindId));
       render();
     }
   });
 
   root.addEventListener('change', event => {
-    const element = event.target.closest('[data-blind-id]');
-    if (!element) return;
-    const blind = blinds.find(item => item.id === Number(element.dataset.blindId));
+    const roomElement = event.target.closest('[data-blind-room-id]');
+    if (!roomElement) return;
+    const room = blindRooms.find(item => item.id === Number(roomElement.dataset.blindRoomId));
+    if (!room) return;
+    if (event.target.matches('[data-blind-room-name]')) {
+      room.name = event.target.value;
+      render();
+      return;
+    }
+    const blindElement = event.target.closest('[data-blind-id]');
+    if (!blindElement) return;
+    const blind = room.blinds.find(item => item.id === Number(blindElement.dataset.blindId));
     if (!blind) return;
     if (event.target.matches('[data-blind-type]')) {
       blind.type = event.target.value;
