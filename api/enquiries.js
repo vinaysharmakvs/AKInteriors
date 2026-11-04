@@ -137,6 +137,24 @@ export default async function handler(req, res) {
         if (!rows.length) return send(res, 404, { ok: false, message: 'We could not find that request ID.' });
         return send(res, 200, { ok: true, enquiry: publicEnquiry(rows[0]) });
       }
+      const mobile = clean(url.searchParams.get('mobile'), 24);
+      if (mobile) {
+        const digits = mobile.replace(/\D/g, '');
+        if (digits.length < 10 || digits.length > 15) {
+          return send(res, 400, { ok: false, message: 'Please enter a valid mobile number.' });
+        }
+        const lastTenDigits = digits.slice(-10);
+        const rows = await sql`
+          SELECT request_id, status, service, location, created_at, status_updated_at
+          FROM enquiries
+          WHERE RIGHT(REGEXP_REPLACE(mobile, '[^0-9]', '', 'g'), 10) = ${lastTenDigits}
+            AND request_id IS NOT NULL
+          ORDER BY created_at DESC
+          LIMIT 20
+        `;
+        if (!rows.length) return send(res, 404, { ok: false, message: 'We could not find a request for that mobile number.' });
+        return send(res, 200, { ok: true, enquiries: rows.map(publicEnquiry) });
+      }
       if (!hasAdminAccess(req)) return send(res, 401, { ok: false, message: 'Team access key required.' });
       const rows = await sql`
         SELECT id, request_id, created_at, status, status_updated_at, customer_name, mobile, email,
