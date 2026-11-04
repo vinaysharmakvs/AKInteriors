@@ -282,7 +282,7 @@ const stageOptions=selectedStatus=>Object.entries(enquiryStages).map(([value,[la
 
 function trackRequest(){
   const requestId=new URLSearchParams(window.location.search).get('requestId')||'';
-  return shell(`<section class="form-page tracking-page"><div class="container"><div class="tracking-intro"><p class="eyebrow">Customer request tracker</p><h1>Track your AK Interiors request</h1><p>Enter the request ID shown after you submitted your enquiry. You will see the latest stage shared by our team.</p><form class="tracking-form" data-track-form><label class="field">Request ID<input name="requestId" value="${escapeHtml(requestId)}" placeholder="AKI-2026-XXXXXXXXXX" autocomplete="off" required/></label><button class="button" type="submit">Check Status →</button></form></div><div class="tracking-result" data-track-result aria-live="polite"><p>Enter your request ID to view its current stage.</p></div><div class="tracking-help"><strong>Need help finding your request?</strong><span>Call <a href="tel:+919736485128">9736485128</a> or contact us on WhatsApp.</span></div></div></section>`);
+  return shell(`<section class="form-page tracking-page"><div class="container"><div class="tracking-intro"><p class="eyebrow">Customer request tracker</p><h1>Track your AK Interiors request</h1><p>Enter your request ID or the mobile number used for your enquiry. You will see the latest stage shared by our team.</p><form class="tracking-form" data-track-form><label class="field">Request ID or Mobile Number<input name="lookup" value="${escapeHtml(requestId)}" placeholder="AKI-2026-XXXXXXXXXX or 9876543210" autocomplete="off" required/></label><button class="button" type="submit">Check Status →</button></form><small class="tracking-privacy">For your privacy, only request progress and project details needed for tracking are shown.</small></div><div class="tracking-result" data-track-result aria-live="polite"><p>Enter your request ID or mobile number to view the current stage.</p></div><div class="tracking-help"><strong>Need help finding your request?</strong><span>Call <a href="tel:+919736485128">9736485128</a> or contact us on WhatsApp.</span></div></div></section>`);
 }
 
 function dashboardLive(){
@@ -377,28 +377,41 @@ document.querySelectorAll('[data-demo-form]').forEach(form=>form.addEventListene
 const trackingForm=document.querySelector('[data-track-form]');
 if(trackingForm){
   const resultPanel=document.querySelector('[data-track-result]');
-  const renderTrackingError=()=>{
-    const whatsappMessage=encodeURIComponent('Hello AK Interiors, I am unable to track my request ID and need assistance.');
-    resultPanel.innerHTML=`<div class="tracking-error-card"><span class="tracking-error-icon" aria-hidden="true">!</span><div><h2>Please enter the correct request ID</h2><p>We could not find or verify this request. Check the ID shown on your enquiry confirmation and try again. It should begin with <strong>AKI-</strong>.</p><p>For immediate resolution, call or WhatsApp AK Interiors.</p><div class="tracking-error-actions"><a class="button" href="tel:+919736485128">☎ Call 9736485128</a><a class="button whatsapp-button" href="https://wa.me/919736485128?text=${whatsappMessage}" target="_blank" rel="noopener noreferrer">WhatsApp Us</a></div></div></div>`;
+  const renderTrackingError=(type='request')=>{
+    const byMobile=type==='mobile';
+    const whatsappMessage=encodeURIComponent('Hello AK Interiors, I am unable to track my request and need assistance.');
+    const title=byMobile?'Please enter the correct mobile number':'Please enter the correct request ID or mobile number';
+    const guidance=byMobile?'Use the same mobile number you entered while submitting the enquiry.':'A request ID begins with <strong>AKI-</strong>. You can also search using the mobile number entered with your enquiry.';
+    resultPanel.innerHTML=`<div class="tracking-error-card"><span class="tracking-error-icon" aria-hidden="true">!</span><div><h2>${title}</h2><p>We could not find or verify this request. ${guidance}</p><p>For immediate resolution, call or WhatsApp AK Interiors.</p><div class="tracking-error-actions"><a class="button" href="tel:+919736485128">☎ Call 9736485128</a><a class="button whatsapp-button" href="https://wa.me/919736485128?text=${whatsappMessage}" target="_blank" rel="noopener noreferrer">WhatsApp Us</a></div></div></div>`;
   };
-  const loadRequest=async requestId=>{
-    const normalized=requestId.trim().toUpperCase();
-    if(!normalized)return;
-    if(!/^AKI-\d{4}-[A-F0-9]{10}$/.test(normalized)){renderTrackingError();return;}
+  const renderTrackedRequest=enquiry=>{
+    const [label,description]=enquiryStages[enquiry.status]||[enquiry.status,'Your request is being processed.'];
+    const stageKeys=Object.keys(enquiryStages).filter(key=>key!=='closed');
+    const currentIndex=Math.max(0,stageKeys.indexOf(enquiry.status));
+    return `<article class="tracking-request-card"><p class="eyebrow">Request ${escapeHtml(enquiry.requestId)}</p><h2>${escapeHtml(label)}</h2><p>${escapeHtml(description)}</p><div class="tracking-meta"><span><strong>Service</strong>${escapeHtml(enquiry.service||'Not specified')}</span><span><strong>Area</strong>${escapeHtml(enquiry.location||'Not shared')}</span><span><strong>Last updated</strong>${new Date(enquiry.statusUpdatedAt).toLocaleString('en-IN')}</span></div><ol class="status-progress">${stageKeys.map((key,index)=>`<li class="${index<currentIndex?'done':index===currentIndex?'current':''}"><span>${index<currentIndex?'✓':index+1}</span>${escapeHtml(enquiryStages[key][0])}</li>`).join('')}</ol></article>`;
+  };
+  const loadRequest=async lookup=>{
+    const entered=String(lookup||'').trim();
+    if(!entered)return;
+    const requestId=entered.toUpperCase();
+    const mobile=entered.replace(/\D/g,'');
+    const isRequestId=requestId.startsWith('AKI-');
+    if(isRequestId&&!/^AKI-\d{4}-[A-F0-9]{10}$/.test(requestId)){renderTrackingError('request');return;}
+    if(!isRequestId&&(mobile.length<10||mobile.length>15)){renderTrackingError('mobile');return;}
     resultPanel.innerHTML='<p>Checking your request…</p>';
     try{
-      const response=await fetch(`/api/enquiries?requestId=${encodeURIComponent(normalized)}`);
+      const endpoint=isRequestId?`/api/enquiries?requestId=${encodeURIComponent(requestId)}`:`/api/enquiries?mobile=${encodeURIComponent(mobile)}`;
+      const response=await fetch(endpoint);
       const result=await response.json().catch(()=>({}));
       if(!response.ok)throw new Error(result.message||'Unable to check this request.');
-      const enquiry=result.enquiry;
-      const [label,description]=enquiryStages[enquiry.status]||[enquiry.status,'Your request is being processed.'];
-      const stageKeys=Object.keys(enquiryStages).filter(key=>key!=='closed');
-      const currentIndex=Math.max(0,stageKeys.indexOf(enquiry.status));
-      resultPanel.innerHTML=`<p class="eyebrow">Request ${escapeHtml(enquiry.requestId)}</p><h2>${escapeHtml(label)}</h2><p>${escapeHtml(description)}</p><div class="tracking-meta"><span><strong>Service</strong>${escapeHtml(enquiry.service||'Not specified')}</span><span><strong>Area</strong>${escapeHtml(enquiry.location||'Not shared')}</span><span><strong>Last updated</strong>${new Date(enquiry.statusUpdatedAt).toLocaleString('en-IN')}</span></div><ol class="status-progress">${stageKeys.map((key,index)=>`<li class="${index<currentIndex?'done':index===currentIndex?'current':''}"><span>${index<currentIndex?'✓':index+1}</span>${escapeHtml(enquiryStages[key][0])}</li>`).join('')}</ol>`;
-      history.replaceState(null,'',`track-request.html?requestId=${encodeURIComponent(normalized)}`);
-    }catch(error){renderTrackingError();}
+      const enquiries=result.enquiries||[result.enquiry].filter(Boolean);
+      if(!enquiries.length)throw new Error('No requests found.');
+      resultPanel.innerHTML=`${enquiries.length>1?`<div class="tracking-list-heading"><h2>${enquiries.length} requests found</h2><p>These enquiries use the mobile number you entered.</p></div>`:''}<div class="tracking-request-list">${enquiries.map(renderTrackedRequest).join('')}</div>`;
+      if(isRequestId)history.replaceState(null,'',`track-request.html?requestId=${encodeURIComponent(requestId)}`);
+      else history.replaceState(null,'',window.location.pathname);
+    }catch(error){renderTrackingError(isRequestId?'request':'mobile');}
   };
-  trackingForm.addEventListener('submit',event=>{event.preventDefault();loadRequest(new FormData(trackingForm).get('requestId'));});
+  trackingForm.addEventListener('submit',event=>{event.preventDefault();loadRequest(new FormData(trackingForm).get('lookup'));});
   const initialId=new URLSearchParams(window.location.search).get('requestId');
   if(initialId)loadRequest(initialId);
 }
